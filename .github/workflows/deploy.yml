@@ -20,5 +20,5 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GUIA_CI }}
-          channelId: live
-          projectId: guia-ci-ramferan # CAMBIAR ESTO POR EL ID REAL DE TU PROYECTO FIREBASE
+          channelId: ${{ github.ref == 'refs/heads/main' && 'live' || 'preview' }}
+          projectId: guia-ci-ramferan
