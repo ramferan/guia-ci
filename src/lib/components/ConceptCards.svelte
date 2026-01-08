@@ -496,9 +496,7 @@
                                     <p>{activeItem.summary}</p>
                                 </div>
 
-                                <LegalBox
-                                    title="Marco Legal: {activeItem.lawTitle}"
-                                >
+                                <LegalBox title={activeItem.lawTitle}>
                                     <p class="quote">{activeItem.lawQuote}</p>
                                 </LegalBox>
 
