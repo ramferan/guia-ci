@@ -5,6 +5,7 @@ export const decisionFlow = {
         start: {
             id: 'start',
             type: 'question',
+            infoType: 'ci',
             question: '¿Qué tipo de actuación es?',
             description: 'Seleccione el contexto de la intervención sanitaria.',
             legal: 'Ley 41/2002, Art. 8: "Toda actuación en el ámbito de la salud de un paciente necesita el consentimiento libre y voluntario del afectado."',
@@ -16,6 +17,7 @@ export const decisionFlow = {
         consentimiento_programado: {
             id: 'consentimiento_programado',
             type: 'result',
+            infoType: 'ci',
             title: 'Solicitar Consentimiento Informado',
             content: 'En actuaciones programadas, es imprescindible recabar el Consentimiento Informado del paciente previamente.',
             legal: 'Ley 41/2002, Art. 4: "Los pacientes tienen derecho a conocer, con motivo de cualquier actuación... toda la información disponible sobre la misma."',
@@ -24,6 +26,7 @@ export const decisionFlow = {
         urgencia_check: {
             id: 'urgencia_check',
             type: 'question',
+            infoType: 'jerarquia',
             question: '¿Cuál es el estado del paciente?',
             description: 'Evalúe la capacidad del paciente para tomar decisiones.',
             legal: 'Ley 41/2002, Art. 9.2.b: "Los facultativos podrán llevar a cabo las intervenciones indispensables... cuando existe riesgo inmediato grave para la integridad física o psíquica."',

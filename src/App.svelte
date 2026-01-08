@@ -6,6 +6,7 @@
   import FlowNavigator from "./lib/components/FlowNavigator.svelte";
   import Login from "./lib/components/Login.svelte";
   import AdminPanel from "./lib/components/AdminPanel.svelte";
+  import ConceptCards from "./lib/components/ConceptCards.svelte";
 
   let currentRoute = window.location.hash;
   let user = null;
@@ -47,7 +48,7 @@
       <p>Ley 41/2002 de Autonomía del Paciente</p>
     </header>
 
-    <FlowNavigator />
+    <ConceptCards />
   {/if}
 </main>
 
