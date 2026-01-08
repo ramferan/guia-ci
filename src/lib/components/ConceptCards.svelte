@@ -1,9 +1,18 @@
 <script>
     import { fade, fly } from "svelte/transition";
+    import { onMount } from "svelte";
+    import {
+        collection,
+        getDocs,
+        query,
+        orderBy,
+        where,
+    } from "firebase/firestore";
+    import { db } from "../firebase";
     import FlowNavigator from "./FlowNavigator.svelte";
     import LegalBox from "./LegalBox.svelte";
 
-    const concepts = [
+    let concepts = [
         {
             id: "ci",
             title: "C. Informado",
@@ -180,6 +189,61 @@
             items: [],
         },
     ];
+
+    // Load concepts from Firestore
+    onMount(async () => {
+        try {
+            const sectionsSnap = await getDocs(
+                query(collection(db, "concept_sections"), orderBy("order")),
+            );
+
+            if (sectionsSnap.empty) {
+                console.log(
+                    "No concept sections in Firestore, using hardcoded data",
+                );
+                return;
+            }
+
+            const loadedConcepts = [];
+
+            for (const sectionDoc of sectionsSnap.docs) {
+                const sectionData = sectionDoc.data();
+
+                // Load items for this section
+                const itemsQuery = query(
+                    collection(db, "concept_items"),
+                    where("sectionId", "==", sectionData.id),
+                    orderBy("order"),
+                );
+                const itemsSnap = await getDocs(itemsQuery);
+
+                const items = itemsSnap.docs.map((doc) => doc.data());
+
+                loadedConcepts.push({
+                    id: sectionData.id,
+                    title: sectionData.title,
+                    items: items,
+                });
+            }
+
+            // Add the guide section at the end
+            loadedConcepts.push({
+                id: "guia",
+                title: "Guía Interactiva",
+                items: [],
+            });
+
+            concepts = loadedConcepts;
+            console.log(
+                "✅ Loaded",
+                concepts.length - 1,
+                "concept sections from Firestore",
+            );
+        } catch (error) {
+            console.error("Error loading concepts from Firestore:", error);
+            console.log("Falling back to hardcoded data");
+        }
+    });
 
     let activeTabIndex = 0;
     let currentCardIndex = 0;

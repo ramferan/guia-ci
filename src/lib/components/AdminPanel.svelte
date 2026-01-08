@@ -5,6 +5,7 @@
         doc,
         getDocs,
         updateDoc,
+        setDoc,
         onSnapshot,
     } from "firebase/firestore";
     import { onMount } from "svelte";
@@ -14,6 +15,7 @@
     let loading = true;
     let selectedNode = null;
     let saveStatus = "";
+    let migrationStatus = ""; // '', 'migrating', 'success', 'error'
 
     onMount(() => {
         // Real-time listener for nodes
