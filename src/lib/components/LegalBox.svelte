@@ -35,6 +35,7 @@
         background-color: #f8fafc;
         border-left: 4px solid var(--color-primary);
         border-radius: 0 0.5rem 0.5rem 0;
+        text-align: left;
     }
 
     .legal-header {
