@@ -11,258 +11,89 @@
     import { db } from "../firebase";
     import FlowNavigator from "./FlowNavigator.svelte";
     import LegalBox from "./LegalBox.svelte";
+    import EditModal from "./EditModal.svelte";
 
-    let concepts = [
-        {
-            id: "ci",
-            title: "C. Informado",
-            items: [
-                {
-                    label: "Definición",
-                    summary:
-                        "Es la conformidad que da el paciente para que se realice una intervención médica tras ser debidamente informado.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 3",
-                    lawQuote:
-                        'La "conformidad libre, voluntaria y consciente de un paciente, manifestada en el pleno uso de sus facultades después de recibir la información adecuada, para que tenga lugar una actuación que afecta a su salud".',
-                },
-                {
-                    label: "Formalización",
-                    summary:
-                        "Por lo general es un acuerdo verbal, pero en casos de riesgo o cirugía debe ser por escrito.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 8.2",
-                    lawQuote:
-                        "El consentimiento será verbal por regla general. Sin embargo, se prestará por escrito en casos de intervención quirúrgica, procedimientos diagnósticos y terapéuticos invasores y procedimientos que suponen riesgos o inconvenientes de notoria y previsible repercusión negativa sobre la salud y su integridad física o psíquica.",
-                },
-                {
-                    label: "Obligatoriedad",
-                    summary:
-                        "Toda intervención requiere el permiso previo del paciente tras entender sus opciones.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art 8.1",
-                    lawQuote:
-                        "Toda actuación en el ámbito de la salud de un paciente necesita el consentimiento libre y voluntario del afectado, una vez que, recibida la información prevista en el artículo 4, haya valorado las opciones propias del caso.",
-                },
-                {
-                    label: "Derecho a la información",
-                    summary:
-                        "El paciente tiene derecho a saber todo sobre su salud, pero también puede elegir no ser informado.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 4",
-                    lawQuote:
-                        "Los pacientes tienen derecho a conocer, con motivo de cualquier actuación en el ámbito de su salud, toda la información disponible sobre la misma, salvando los supuestos exceptuados por Ley. Toda persona tiene derecho a que se respete su voluntad de no ser informada.",
-                },
-                {
-                    label: "Respeto a las decisiones",
-                    summary:
-                        "El paciente es quien tiene la última palabra sobre qué opción clínica prefiere.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 8.3",
-                    lawQuote:
-                        "Todo paciente o usuario tiene derecho a decidir libremente, después de recibir la información adecuada, entre las opciones clínicas disponibles.",
-                },
-                {
-                    label: "Límites del consentimiento",
-                    summary:
-                        "En urgencias vitales o riesgos para la salud pública, el médico puede actuar sin consentimiento previo.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 9.2",
-                    lawQuote:
-                        "Los facultativos podrán llevar a cabo las intervenciones indispensables sin necesidad de consentimiento en caso de riesgo para la salud pública o riesgo inmediato grave para la integridad física o psíquica del enfermo.",
-                },
-            ],
-        },
-        {
-            id: "ip",
-            title: "I. Previas",
-            items: [
-                {
-                    label: "Concepto",
-                    summary:
-                        "Es un documento para asegurar que se respete tu voluntad médica cuando ya no puedas expresarla.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 11.1",
-                    lawQuote:
-                        "Por este documento, una persona mayor de edad, capaz y libre, manifiesta anticipadamente su voluntad, para que ésta sea tenida en cuenta en el momento en que se encuentre en una situación en que las circunstancias no le permitan expresar personalmente su voluntad.",
-                },
-                {
-                    label: "Registro Nacional",
-                    summary:
-                        "Existe una base de datos centralizada para que tus instrucciones sean visibles en cualquier hospital de España.",
-                    lawTitle:
-                        "R.D. 415/2022 por el que se regula el Registro Nacional de Instrucciones Previas",
-                    lawQuote:
-                        "Para asegurar la eficacia en todo el territorio de las instrucciones previas, se creó el Registro Nacional de Instrucciones Previas en el Ministerio de Sanidad.",
-                },
-                {
-                    label: "Responsabilidad Médica",
-                    summary:
-                        "El médico tiene el deber profesional de buscar si tienes instrucciones registradas y aplicarlas.",
-                    lawTitle:
-                        "Ley 3/2005 de Medidas en Materia de Seguridad Sanitaria (C. La Mancha), Art. 8.1",
-                    lawQuote:
-                        "El médico tiene la obligación de consultar si existen instrucciones previas en la historia clínica o en el registro y respetarlas conforme a la normativa vigente.",
-                },
-                {
-                    label: "Deber de Respetar",
-                    summary:
-                        "Tus deseos escritos son de obligado cumplimiento, salvo que vayan en contra de la ley.",
-                    lawTitle:
-                        "Ley 4/2017 de derechos y garantías de las personas en el proceso de morir (C. La Mancha), Art. 14.1",
-                    lawQuote:
-                        "Se respetarán las instrucciones conforme a la normativa vigente, salvo que resulten contrarias al ordenamiento jurídico o a la buena práctica clínica (lex artis).",
-                },
-                {
-                    label: "Maneras de Formular",
-                    summary:
-                        "Puedes crear tus instrucciones ante testigos, ante el personal administrativo o ante un notario.",
-                    lawTitle:
-                        "Ley 3/2005 de Medidas en Materia de Seguridad Sanitaria (C. La Mancha), Art. 5.2",
-                    lawQuote:
-                        "Las instrucciones previas podrán formalizarse ante el funcionariado de la administración sanitaria, ante tres testigos cumpliendo los requisitos legales, o mediante acta notarial.",
-                },
-                {
-                    label: "Consulta a Allegados",
-                    summary:
-                        "Si no hay instrucciones escritas, se pregunta a la familia qué es lo que el paciente querría realmente.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 9.2",
-                    lawQuote:
-                        "En caso de ausencia de I.P., se consultará a los allegados para conocer la voluntad clara e inequívoca del paciente, no las opiniones personales de los mismos.",
-                },
-            ],
-        },
-        {
-            id: "jerarquia",
-            title: "Jerarquía",
-            items: [
-                {
-                    label: "Escalera de decisión",
-                    summary:
-                        "La ley establece un orden estricto de consulta para respetar la autonomía del paciente en todo momento.",
-                    lawTitle: "Procedimiento CEH / Ley 41/2002",
-                    lawQuote:
-                        "1. Voluntad actual (CI) > 2. Instrucciones Previas (IP) > 3. Representantes o Allegados > 4. Beneficio de la Salud (Criterio médico profesional).",
-                },
-                {
-                    label: "Paso 1: Consentimiento",
-                    summary:
-                        "Si el paciente es capaz y está consciente, su decisión actual es lo único que cuenta.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 8",
-                    lawQuote:
-                        "Toda actuación en el ámbito de la salud de un paciente necesita el consentimiento libre y voluntario del afectado.",
-                },
-                {
-                    label: "Paso 2: Instr. Previas",
-                    summary:
-                        "Si el paciente no puede hablar, se comprueba si dejó algo escrito en el Registro oficial.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 11",
-                    lawQuote:
-                        "Se manifiesta anticipadamente su voluntad para que sea tenida en cuenta cuando no pueda expresarla personalmente.",
-                },
-                {
-                    label: "Paso 3: Allegados",
-                    summary:
-                        "Si no hay IP, se pregunta a familiares lo que el paciente querría, no lo que ellos quieran.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 9.3",
-                    lawQuote:
-                        "El consentimiento lo prestarán sus representantes legales o personas vinculadas por razones familiares o de hecho.",
-                },
-                {
-                    label: "Paso 4: Beneficio Médico",
-                    summary:
-                        "Si nada de lo anterior es posible (urgencia vital), el médico actúa para salvar la vida.",
-                    lawTitle:
-                        "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 9.2",
-                    lawQuote:
-                        "Los facultativos podrán llevar a cabo las intervenciones indispensables sin necesidad de consentimiento en caso de riesgo inmediato grave.",
-                },
-            ],
-        },
-        {
-            id: "guia",
-            title: "Guía Interactiva",
-            items: [],
-        },
-    ];
+    export let isAdmin = false;
 
-    // Load concepts from Firestore
-    onMount(async () => {
+    let concepts = [];
+    let activeTabIndex = 0;
+    let currentCardIndex = 0;
+    let isReordering = false;
+
+    // Editing state
+    let editingItem = null;
+    let editingSection = null;
+    let editingNewNode = false;
+
+    async function loadData() {
         try {
             const sectionsSnap = await getDocs(
                 query(collection(db, "concept_sections"), orderBy("order")),
             );
 
-            if (sectionsSnap.empty) {
-                console.log(
-                    "No concept sections in Firestore, using hardcoded data",
-                );
-                return;
-            }
+            if (sectionsSnap.empty) return;
 
             const loadedConcepts = [];
-
             for (const sectionDoc of sectionsSnap.docs) {
                 const sectionData = sectionDoc.data();
-
-                // Load items for this section
                 const itemsQuery = query(
                     collection(db, "concept_items"),
-                    where("sectionId", "==", sectionData.id),
-                    orderBy("order"),
+                    where("sectionId", "==", sectionData.id || sectionDoc.id),
                 );
                 const itemsSnap = await getDocs(itemsQuery);
-
-                const items = itemsSnap.docs.map((doc) => doc.data());
+                const items = itemsSnap.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                items.sort(
+                    (a, b) =>
+                        (Number(a["order"]) || 0) - (Number(b["order"]) || 0),
+                );
 
                 loadedConcepts.push({
-                    id: sectionData.id,
-                    title: sectionData.title,
+                    id: sectionDoc.id,
+                    ...sectionData,
                     items: items,
                 });
             }
 
-            // Add the guide section at the end
-            loadedConcepts.push({
-                id: "guia",
-                title: "Guía Interactiva",
-                items: [],
-            });
+            // Ensure "Guía Interactiva" is always the 4th tab if not already present
+            if (!loadedConcepts.find((c) => c.id === "guia")) {
+                loadedConcepts.push({
+                    id: "guia",
+                    title: "Guía Interactiva",
+                    description:
+                        "Herramienta interactiva para la toma de decisiones clínicas y legales.",
+                    items: [],
+                });
+            }
 
             concepts = loadedConcepts;
-            console.log(
-                "✅ Loaded",
-                concepts.length - 1,
-                "concept sections from Firestore",
-            );
         } catch (error) {
-            console.error("Error loading concepts from Firestore:", error);
-            console.log("Falling back to hardcoded data");
+            console.error("Error loading concepts:", error);
         }
+    }
+
+    onMount(async () => {
+        await loadData();
     });
 
-    let activeTabIndex = 0;
-    let currentCardIndex = 0;
-
-    $: activeSection = concepts[activeTabIndex];
+    $: activeSection =
+        concepts && concepts.length > 0 ? concepts[activeTabIndex] : null;
     $: initials =
-        activeSection.id === "ci"
+        activeSection && activeSection.id === "ci"
             ? "CI"
-            : activeSection.id === "ip"
+            : activeSection && activeSection.id === "ip"
               ? "IP"
-              : activeSection.id === "jerarquia"
-                ? "J"
+              : activeSection && activeSection.id === "jerarquia"
+                ? "JH"
                 : "GI";
 
-    $: isGuideMode = activeSection.id === "guia" && currentCardIndex > 0;
+    $: isGuideMode =
+        activeSection && activeSection.id === "guia" && currentCardIndex > 0;
 
-    // activeItem maps to index - 2 (Card 2 is Item 0)
     $: activeItem =
-        currentCardIndex >= 2
+        activeSection && currentCardIndex >= 2
             ? activeSection.items[currentCardIndex - 2]
             : null;
 
@@ -280,15 +111,113 @@
     }
 
     function nextCard() {
+        if (!activeSection) return;
         const totalCards =
-            activeSection.id === "guia" ? 2 : activeSection.items.length + 2;
+            activeSection.id === "guia"
+                ? 2
+                : (activeSection.items?.length || 0) + 2;
         currentCardIndex = (currentCardIndex + 1) % totalCards;
     }
 
     function prevCard() {
+        if (!activeSection) return;
         const totalCards =
-            activeSection.id === "guia" ? 2 : activeSection.items.length + 2;
+            activeSection.id === "guia"
+                ? 2
+                : (activeSection.items?.length || 0) + 2;
         currentCardIndex = (currentCardIndex - 1 + totalCards) % totalCards;
+    }
+
+    function handleEditItem(item) {
+        editingItem = { ...item };
+    }
+
+    function handleEditSection(section) {
+        editingSection = { ...section };
+    }
+
+    function handleNewSection() {
+        editingSection = {
+            id: "new-section-" + Date.now(),
+            title: "",
+            description: "",
+            order:
+                concepts.length > 0
+                    ? (Number(concepts[concepts.length - 1].order) || 0) + 1
+                    : 1,
+        };
+    }
+
+    function handleNewItem(sectionId) {
+        const section = concepts.find((c) => c.id === sectionId);
+        const lastOrder =
+            section?.items?.length > 0
+                ? Number(section.items[section.items.length - 1].order) || 0
+                : 0;
+
+        editingItem = {
+            id: "new-item-" + Date.now(),
+            sectionId: sectionId,
+            label: "",
+            summary: "",
+            lawTitle: "",
+            lawQuote: "",
+            order: lastOrder + 1,
+        };
+    }
+
+    function handleNewNode() {
+        editingNewNode = true;
+    }
+
+    async function moveItem(item, direction) {
+        if (!activeSection) return;
+        const items = activeSection.items;
+        const index = items.findIndex((i) => i.id === item.id);
+
+        if (direction === "up" && index > 0) {
+            await swapOrder("concept_items", item, items[index - 1]);
+        } else if (direction === "down" && index < items.length - 1) {
+            await swapOrder("concept_items", item, items[index + 1]);
+        }
+    }
+
+    async function swapOrder(collectionName, item1, item2) {
+        const { updateDoc, doc } = await import("firebase/firestore");
+        const order1 = Number(item1.order) || 0;
+        const order2 = Number(item2.order) || 0;
+
+        const ref1 = doc(db, collectionName, item1.id);
+        const ref2 = doc(db, collectionName, item2.id);
+
+        try {
+            await updateDoc(ref1, { order: order2 });
+            await updateDoc(ref2, { order: order1 });
+            await loadData();
+        } catch (error) {
+            console.error("Error swapping order:", error);
+        }
+    }
+
+    async function handleSectionDeleted(event) {
+        const section = event.detail;
+        const { deleteDoc, doc } = await import("firebase/firestore");
+
+        // Clean up items for this section
+        const itemsToDelete = section.items || [];
+        for (const item of itemsToDelete) {
+            try {
+                await deleteDoc(doc(db, "concept_items", item.id));
+            } catch (error) {
+                console.error("Error deleting orphaned item:", error);
+            }
+        }
+    }
+
+    function onSaveSuccess() {
+        loadData();
+        editingItem = null;
+        editingSection = null;
     }
 </script>
 
@@ -296,275 +225,528 @@
     <div class="tabs-wrapper">
         <div class="tabs conceptual-tabs">
             {#each concepts.slice(0, 3) as section, i}
-                <button
+                <div
                     class="tab-btn"
                     class:active={activeTabIndex === i}
                     on:click={() => changeTab(i)}
+                    role="button"
+                    tabindex="0"
+                    on:keydown={(e) => e.key === "Enter" && changeTab(i)}
                 >
                     {section.title}
-                </button>
-            {/each}
-        </div>
-
-        <div class="tabs guide-tabs">
-            <button
-                class="tab-btn tab-guide"
-                class:active={activeTabIndex === 3}
-                on:click={() => changeTab(3)}
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="tab-icon"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-                        clip-rule="evenodd"
-                    />
-                </svg>
-                {concepts[3].title}
-            </button>
-        </div>
-    </div>
-
-    <div class="carousel-container" class:is-flow={isGuideMode}>
-        {#if !isGuideMode}
-            <button
-                class="nav-arrow left"
-                on:click={prevCard}
-                aria-label="Anterior"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    ><path
-                        fill-rule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
-                    /></svg
-                >
-            </button>
-        {/if}
-
-        <div class="card-display">
-            {#if isGuideMode}
-                <div in:fade class="flow-wrapper">
-                    <div class="flow-inner">
-                        <FlowNavigator onExitFlow={handleExitFlow} />
-                    </div>
-                </div>
-            {:else}
-                {#key `${activeTabIndex}-${currentCardIndex}`}
-                    <div
-                        in:fly={{ x: 20, duration: 300 }}
-                        out:fade={{ duration: 150 }}
-                        class="card carousel-card"
-                    >
-                        {#if currentCardIndex > 0}
-                            <button
-                                class="btn-reset-cover"
-                                title="Volver a la portada de {activeSection.title}"
-                                on:click={() => goToCard(0)}
+                    {#if isAdmin && activeTabIndex === i}
+                        <button
+                            class="tab-delete-btn"
+                            on:click|stopPropagation={() => {
+                                if (
+                                    confirm(
+                                        "¿Estás seguro de que deseas eliminar esta sección y TODOS sus contenidos? Esta acción no se puede deshacer.",
+                                    )
+                                ) {
+                                    handleSectionDeleted({ detail: section });
+                                    // Also delete the section itself
+                                    (async () => {
+                                        const { deleteDoc, doc } = await import(
+                                            "firebase/firestore"
+                                        );
+                                        await deleteDoc(
+                                            doc(
+                                                db,
+                                                "concept_sections",
+                                                section.id,
+                                            ),
+                                        );
+                                        loadData();
+                                    })();
+                                }
+                            }}
+                            title="Borrar sección y contenidos"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
                             >
-                                {initials}
-                            </button>
-                        {/if}
-                        {#if currentCardIndex === 0}
-                            <!-- Title Card -->
-                            <div class="title-card">
-                                <div class="icon-hero">
-                                    {#if activeSection.id === "ci"}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.5"
-                                            stroke="currentColor"
-                                            class="hero-svg"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                                            />
-                                        </svg>
-                                    {:else if activeSection.id === "ip"}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.2"
-                                            stroke="currentColor"
-                                            class="hero-svg"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-                                            />
-                                        </svg>
-                                    {:else if activeSection.id === "jerarquia"}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.2"
-                                            stroke="currentColor"
-                                            class="hero-svg"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M12 3v17.25m0 0a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25zM12 3a1.125 1.125 0 110-2.25A1.125 1.125 0 1012 3zm0 0c6.21 0 11.25 5.04 11.25 11.25S18.21 25.5 12 25.5 0.75 20.46.75 14.25 5.79 3 12 3zM12 3a9 9 0 100 18 9 9 0 000-18z"
-                                            />
-                                        </svg>
-                                    {:else if activeSection.id === "guia"}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.5"
-                                            stroke="currentColor"
-                                            class="hero-svg"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                                            />
-                                        </svg>
-                                    {/if}
-                                </div>
-                                <h3>{activeSection.title}</h3>
-                                <p class="subtitle">
-                                    {activeSection.id === "guia"
-                                        ? "Herramienta interactiva para la toma de decisiones clínicas."
-                                        : "Información Fundamental y Marco Legal"}
-                                </p>
-                                <button
-                                    class="btn btn-primary"
-                                    on:click={nextCard}
-                                >
-                                    {activeSection.id === "guia"
-                                        ? "Comenzar Guía"
-                                        : "Empezar consulta"}
-                                </button>
-                            </div>
-                        {:else if currentCardIndex === 1}
-                            <!-- Index Card -->
-                            <div class="index-card">
-                                <div class="index-header">
-                                    <h4>{activeSection.title}</h4>
-                                    <div class="index-separator">
-                                        <span class="separator-line"></span>
-                                        <span class="separator-text"
-                                            >Índice de contenidos</span
-                                        >
-                                        <span class="separator-line"></span>
-                                    </div>
-                                </div>
-                                <div class="index-grid">
-                                    {#each activeSection.items as item, i}
-                                        <button
-                                            class="index-item"
-                                            on:click={() => goToCard(i + 2)}
-                                        >
-                                            <span class="index-num"
-                                                >{i + 1}</span
-                                            >
-                                            <span class="index-label"
-                                                >{item.label}</span
-                                            >
-                                            <span class="index-arrow">→</span>
-                                        </button>
-                                    {/each}
-                                </div>
-                            </div>
-                        {:else if activeItem}
-                            <!-- Detail Card -->
-                            <div class="detail-card">
-                                <div class="card-content">
-                                    <div class="card-title-row">
-                                        <span class="card-num"
-                                            >{currentCardIndex - 1}</span
-                                        >
-                                        <h4>{activeItem.label}</h4>
-                                    </div>
-                                    <p>{activeItem.summary}</p>
-                                </div>
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                                />
+                            </svg>
+                        </button>
+                    {/if}
+                </div>
+            {/each}
 
-                                <LegalBox title={activeItem.lawTitle}>
-                                    <p class="quote">{activeItem.lawQuote}</p>
-                                </LegalBox>
-
-                                <button
-                                    class="btn-goto-index"
-                                    on:click={() => goToCard(1)}
-                                >
-                                    &lt; Volver al índice
-                                </button>
-                            </div>
-                        {/if}
-                    </div>
-                {/key}
+            {#if isAdmin}
+                <button
+                    class="tab-btn add-tab-btn"
+                    on:click={handleNewSection}
+                    title="Añadir nueva categoría"
+                >
+                    + Nueva
+                </button>
             {/if}
         </div>
 
-        {#if !isGuideMode}
-            <button
-                class="nav-arrow right"
-                on:click={nextCard}
-                aria-label="Siguiente"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    ><path
-                        fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"
-                    /></svg
+        {#if concepts && concepts.length > 3}
+            <div class="tabs guide-tabs">
+                <button
+                    class="tab-btn tab-guide"
+                    class:active={activeTabIndex === 3}
+                    on:click={() => changeTab(3)}
                 >
-            </button>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        class="tab-icon"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    {concepts[3].title}
+                </button>
+            </div>
         {/if}
     </div>
 
-    {#if activeSection.id !== "guia"}
-        <div class="indicators">
-            <!-- Dot for Title -->
-            <button
-                class="dot"
-                class:active={currentCardIndex === 0}
-                on:click={() => goToCard(0)}
-                aria-label="Portada"
-            ></button>
-            <!-- Dot for Index -->
-            <button
-                class="dot"
-                class:active={currentCardIndex === 1}
-                on:click={() => goToCard(1)}
-                aria-label="Índice"
-            ></button>
-            <!-- Dots for items -->
-            {#each activeSection.items as _, i}
+    {#if activeSection}
+        <div class="carousel-container" class:is-flow={isGuideMode}>
+            {#if !isGuideMode}
+                <button
+                    class="nav-arrow left"
+                    on:click={prevCard}
+                    aria-label="Anterior"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        ><path
+                            fill-rule="evenodd"
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clip-rule="evenodd"
+                        /></svg
+                    >
+                </button>
+            {/if}
+
+            <div class="card-display">
+                {#if isGuideMode}
+                    <div in:fade class="flow-wrapper">
+                        <div class="flow-inner">
+                            {#if isAdmin}
+                                <button
+                                    class="admin-add-node-btn"
+                                    on:click={handleNewNode}
+                                >
+                                    + Crear Nuevo Paso del Algoritmo
+                                </button>
+                            {/if}
+                            <FlowNavigator
+                                onExitFlow={handleExitFlow}
+                                {isAdmin}
+                            />
+                        </div>
+                    </div>
+                {:else}
+                    {#key `${activeTabIndex}-${currentCardIndex}`}
+                        <div
+                            in:fly={{ x: 20, duration: 300 }}
+                            out:fade={{ duration: 150 }}
+                            class="card carousel-card"
+                        >
+                            <div class="card-actions-top">
+                                {#if currentCardIndex > 0}
+                                    <button
+                                        class="btn-reset-cover"
+                                        title="Volver a la portada de {activeSection.title}"
+                                        on:click={() => goToCard(0)}
+                                    >
+                                        {initials}
+                                    </button>
+                                {/if}
+
+                                {#if isAdmin}
+                                    <button
+                                        class="edit-btn-top-inner"
+                                        class:active={isReordering &&
+                                            currentCardIndex === 1}
+                                        on:click|stopPropagation={() => {
+                                            if (currentCardIndex === 0) {
+                                                handleEditSection(
+                                                    activeSection,
+                                                );
+                                            } else if (currentCardIndex === 1) {
+                                                isReordering = !isReordering;
+                                            } else {
+                                                handleEditItem(activeItem);
+                                            }
+                                        }}
+                                        title={currentCardIndex === 0
+                                            ? "Editar sección"
+                                            : currentCardIndex === 1
+                                              ? isReordering
+                                                  ? "Finalizar reordenación"
+                                                  : "Reordenar fichas"
+                                              : "Editar elemento"}
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                            />
+                                        </svg>
+                                    </button>
+                                {/if}
+                            </div>
+                            {#if currentCardIndex === 0}
+                                <!-- Title Card -->
+                                <div class="title-card">
+                                    <div class="icon-hero">
+                                        {#if activeSection.id === "ci"}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.5"
+                                                stroke="currentColor"
+                                                class="hero-svg"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                                                />
+                                            </svg>
+                                        {:else if activeSection.id === "ip"}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.2"
+                                                stroke="currentColor"
+                                                class="hero-svg"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+                                                />
+                                            </svg>
+                                        {:else if activeSection.id === "jerarquia"}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.2"
+                                                stroke="currentColor"
+                                                class="hero-svg"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M12 3v17.25m0 0a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25zM12 3a1.125 1.125 0 110-2.25A1.125 1.125 0 1012 3zm0 0c6.21 0 11.25 5.04 11.25 11.25S18.21 25.5 12 25.5 0.75 20.46.75 14.25 5.79 3 12 3zM12 3a9 9 0 100 18 9 9 0 000-18z"
+                                                />
+                                            </svg>
+                                        {:else if activeSection.id === "guia"}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.5"
+                                                stroke="currentColor"
+                                                class="hero-svg"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                                                />
+                                            </svg>
+                                        {/if}
+                                    </div>
+                                    <div
+                                        class="header-content title-card-header"
+                                    >
+                                        <h3>
+                                            {activeSection.title ||
+                                                "Sección sin título"}
+                                        </h3>
+                                        {#if activeSection.description}
+                                            <p class="section-description">
+                                                {activeSection.description}
+                                            </p>
+                                        {:else}
+                                            <p class="subtitle">
+                                                {activeSection.id === "guia"
+                                                    ? "Herramienta interactiva para la toma de decisiones clínicas."
+                                                    : "Información Fundamental y Marco Legal"}
+                                            </p>
+                                        {/if}
+                                    </div>
+                                    <button
+                                        class="btn btn-primary"
+                                        on:click={nextCard}
+                                    >
+                                        {activeSection.id === "guia"
+                                            ? "Comenzar Guía"
+                                            : "Empezar consulta"}
+                                    </button>
+                                </div>
+                            {:else if currentCardIndex === 1}
+                                <!-- Index Card -->
+                                <div class="index-card">
+                                    <div class="index-header">
+                                        <h4>{activeSection.title}</h4>
+                                        <div class="index-separator">
+                                            <span class="separator-line"></span>
+                                            <span class="separator-text"
+                                                >{isReordering
+                                                    ? "Modo Reordenar"
+                                                    : "Índice de contenidos"}</span
+                                            >
+                                            <span class="separator-line"></span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="index-grid"
+                                        class:reordering={isReordering}
+                                    >
+                                        {#each activeSection.items || [] as item, i}
+                                            <div class="index-item-container">
+                                                <button
+                                                    class="index-item"
+                                                    on:click={() =>
+                                                        !isReordering &&
+                                                        goToCard(i + 2)}
+                                                    disabled={isReordering}
+                                                >
+                                                    <span class="index-num"
+                                                        >{i + 1}</span
+                                                    >
+                                                    <span class="index-label"
+                                                        >{item.label}</span
+                                                    >
+                                                    {#if !isReordering}
+                                                        <span
+                                                            class="index-arrow"
+                                                            >→</span
+                                                        >
+                                                    {/if}
+                                                </button>
+
+                                                {#if isAdmin && isReordering}
+                                                    <div
+                                                        class="index-admin-controls"
+                                                    >
+                                                        <button
+                                                            class="move-btn"
+                                                            on:click|stopPropagation={() =>
+                                                                moveItem(
+                                                                    item,
+                                                                    "up",
+                                                                )}
+                                                            disabled={i === 0}
+                                                            title="Subir"
+                                                        >
+                                                            ▲
+                                                        </button>
+                                                        <button
+                                                            class="move-btn"
+                                                            on:click|stopPropagation={() =>
+                                                                moveItem(
+                                                                    item,
+                                                                    "down",
+                                                                )}
+                                                            disabled={i ===
+                                                                activeSection
+                                                                    .items
+                                                                    .length -
+                                                                    1}
+                                                            title="Bajar"
+                                                        >
+                                                            ▼
+                                                        </button>
+                                                    </div>
+                                                {/if}
+                                            </div>
+                                        {/each}
+
+                                        {#if isAdmin && activeSection.id !== "guia" && !isReordering}
+                                            <button
+                                                class="index-item add-item-btn"
+                                                on:click={() =>
+                                                    handleNewItem(
+                                                        activeSection.id,
+                                                    )}
+                                            >
+                                                <span class="index-num">+</span>
+                                                <span class="index-label"
+                                                    >Añadir Nueva Ficha</span
+                                                >
+                                            </button>
+                                        {/if}
+                                    </div>
+                                </div>
+                            {:else if activeItem}
+                                <!-- Item Card -->
+                                <div class="item-card">
+                                    <div class="card-num">
+                                        <div class="num-circle">
+                                            {currentCardIndex - 1}
+                                        </div>
+                                        <div class="header-content">
+                                            <h4>{activeItem.label}</h4>
+                                        </div>
+                                    </div>
+                                    <p>{activeItem.summary}</p>
+
+                                    {#if activeItem.lawQuote}
+                                        <LegalBox
+                                            title={activeItem.lawTitle}
+                                            content={activeItem.lawQuote}
+                                        />
+                                    {/if}
+
+                                    <button
+                                        class="btn-goto-index"
+                                        on:click={() => goToCard(1)}
+                                    >
+                                        &lt; Volver al índice
+                                    </button>
+                                </div>
+                            {/if}
+                        </div>
+                    {/key}
+                {/if}
+            </div>
+
+            {#if !isGuideMode}
+                <button
+                    class="nav-arrow right"
+                    on:click={nextCard}
+                    aria-label="Siguiente"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        ><path
+                            fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"
+                        /></svg
+                    >
+                </button>
+            {/if}
+        </div>
+
+        {#if (activeSection.items?.length || 0) > 0 || activeSection.id === "guia"}
+            <div class="indicators">
                 <button
                     class="dot"
-                    class:active={currentCardIndex === i + 2}
-                    on:click={() => goToCard(i + 2)}
-                    aria-label="Página {i + 1}"
+                    class:active={currentCardIndex === 0}
+                    on:click={() => goToCard(0)}
+                    aria-label="Portada"
                 ></button>
-            {/each}
+                <button
+                    class="dot"
+                    class:active={currentCardIndex === 1}
+                    on:click={() => goToCard(1)}
+                    aria-label="Índice"
+                ></button>
+                {#each activeSection.items || [] as _, i}
+                    <button
+                        class="dot"
+                        class:active={currentCardIndex === i + 2}
+                        on:click={() => goToCard(i + 2)}
+                        aria-label="Página {i + 1}"
+                    ></button>
+                {/each}
+            </div>
+        {/if}
+    {:else}
+        <div class="loading-concepts">
+            <p>Cargando contenidos...</p>
         </div>
     {/if}
 </section>
 
+{#if editingItem}
+    <EditModal
+        node={editingItem}
+        collectionName="concept_items"
+        fields={[
+            { name: "label", label: "Etiqueta / Título", type: "text" },
+            { name: "summary", label: "Resumen explicativo", type: "textarea" },
+            { name: "lawTitle", label: "Ref. Legal (Título)", type: "text" },
+            { name: "lawQuote", label: "Cita Legal (Texto)", type: "textarea" },
+        ]}
+        on:close={() => (editingItem = null)}
+        on:save={onSaveSuccess}
+    />
+{/if}
+
+{#if editingSection}
+    <EditModal
+        node={editingSection}
+        collectionName="concept_sections"
+        fields={[
+            { name: "title", label: "Título de la Sección", type: "text" },
+            {
+                name: "description",
+                label: "Descripción / Resumen",
+                type: "textarea",
+            },
+        ]}
+        on:close={() => (editingSection = null)}
+        on:save={onSaveSuccess}
+        on:delete={handleSectionDeleted}
+    />
+{/if}
+
+{#if editingNewNode}
+    <EditModal
+        node={{ id: "nuevo-nodo-" + Date.now(), type: "question", options: [] }}
+        collectionName="nodes"
+        fields={[
+            { name: "id", label: "ID Técnico del Nodo", type: "text" },
+            {
+                name: "type",
+                label: "Tipo",
+                type: "select",
+                options: [
+                    { value: "question", label: "Pregunta" },
+                    { value: "result", label: "Resultado" },
+                ],
+            },
+            { name: "question", label: "Pregunta / Título", type: "text" },
+            { name: "description", label: "Descripción", type: "textarea" },
+            { name: "lawTitle", label: "Ref. Legal", type: "text" },
+            { name: "lawQuote", label: "Cita Legal", type: "textarea" },
+        ]}
+        on:close={() => (editingNewNode = false)}
+        on:save={() => location.reload()}
+    />
+{/if}
+
 <style>
     .carousel-card {
-        padding: 2rem;
+        padding: 2.5rem;
         background: white;
         min-height: 320px;
         display: flex;
@@ -574,33 +756,65 @@
         text-align: left;
         box-shadow: var(--shadow-md);
         position: relative;
+        border-radius: var(--radius-lg);
     }
 
-    .btn-reset-cover {
+    .card-actions-top {
         position: absolute;
         top: 1.5rem;
         right: 1.5rem;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 10;
+    }
+
+    .btn-reset-cover {
+        background: white;
+        border: 1px solid #e2e8f0;
         width: 38px;
         height: 38px;
-        background: var(--color-primary);
-        color: white;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
-        font-weight: 900;
-        box-shadow: var(--shadow-md);
-        transition: all 0.2s;
-        border: 2px solid white;
-        z-index: 10;
+        color: var(--color-primary);
+        font-size: 0.75rem;
+        font-weight: 800;
         cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: var(--shadow-sm);
     }
 
     .btn-reset-cover:hover {
+        background: #f8fafc;
+        border-color: var(--color-primary);
         transform: scale(1.1);
-        background: var(--color-primary-dark);
-        box-shadow: var(--shadow-md);
+    }
+
+    .edit-btn-top-inner {
+        width: 38px;
+        height: 38px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: var(--color-secondary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .edit-btn-top-inner:hover {
+        transform: scale(1.1);
+        border-color: var(--color-secondary);
+        background: #fffafa;
+    }
+
+    .edit-btn-top-inner svg {
+        width: 18px;
+        height: 18px;
     }
 
     .concept-navigation {
@@ -696,6 +910,7 @@
     }
 
     .index-item {
+        flex: 1;
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -706,6 +921,42 @@
         text-align: left;
         transition: all 0.2s;
         color: var(--color-text-main);
+        cursor: pointer;
+    }
+
+    .index-item-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .index-admin-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .move-btn {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 0.65rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--color-primary);
+    }
+
+    .move-btn:hover:not(:disabled) {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+    }
+
+    .move-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
     }
 
     .index-item:hover {
@@ -719,12 +970,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 22px;
-        height: 22px;
+        min-width: 24px;
+        height: 24px;
         background: var(--color-primary);
         color: white;
         border-radius: 50%;
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 700;
     }
 
@@ -745,6 +996,32 @@
         transform: translateX(2px);
     }
 
+    .add-item-btn {
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        color: var(--color-primary);
+        font-weight: 700;
+        opacity: 0.7;
+    }
+
+    .add-item-btn:hover {
+        opacity: 1;
+        border-color: var(--color-primary);
+        background: white;
+    }
+
+    .add-tab-btn {
+        background: rgba(255, 255, 255, 0.4) !important;
+        border: 1px dashed var(--color-primary);
+        color: var(--color-primary);
+        font-weight: 800;
+    }
+
+    .add-tab-btn:hover {
+        background: white !important;
+        border-style: solid;
+    }
+
     .btn-goto-index {
         align-self: flex-start;
         background: none;
@@ -754,6 +1031,7 @@
         margin-top: 1rem;
         font-weight: 600;
         width: auto;
+        cursor: pointer;
     }
 
     .btn-goto-index:hover {
@@ -783,6 +1061,32 @@
         background: rgba(var(--color-primary-rgb), 0.15);
     }
 
+    .tab-delete-btn {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: none;
+        padding: 4px;
+        border-radius: 4px;
+        margin-left: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        opacity: 0.6;
+    }
+
+    .tab-delete-btn:hover {
+        background: #ef4444;
+        color: white;
+        opacity: 1;
+    }
+
+    .tab-delete-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
     .tab-btn {
         flex: 1;
         padding: 0.6rem;
@@ -809,13 +1113,11 @@
         background: white;
         color: var(--color-primary);
         border: 2px solid var(--color-primary);
-        box-shadow: 0 2px 4px rgba(var(--color-primary-rgb), 0.1);
     }
 
     .tab-btn.tab-guide.active {
         background: var(--color-primary);
         color: white;
-        box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
     }
 
     .tab-icon {
@@ -831,12 +1133,13 @@
         justify-content: center;
         width: 100%;
         gap: 1.5rem;
-        min-height: 320px;
+        min-height: 350px;
         position: relative;
     }
 
     .carousel-container.is-flow {
         justify-content: center;
+        align-items: flex-start;
     }
 
     .flow-wrapper {
@@ -848,8 +1151,27 @@
     .flow-inner {
         position: relative;
         width: 100%;
-        max-width: 540px; /* Slightly wider than navigator to accommodate buttons */
+        max-width: 580px;
         padding-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .admin-add-node-btn {
+        background: white;
+        color: var(--color-primary);
+        border: 2px dashed var(--color-primary);
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .admin-add-node-btn:hover {
+        background: var(--color-primary);
+        color: white;
     }
 
     .card-display {
@@ -860,50 +1182,40 @@
     h4 {
         margin: 0;
         color: var(--color-primary-dark);
-        font-size: 1.25rem;
+        font-size: 1.4rem;
+        font-weight: 800;
     }
 
     p {
-        font-size: 1rem;
+        font-size: 1.05rem;
         line-height: 1.6;
         color: var(--color-text-main);
-        margin-bottom: 0.5rem;
-    }
-
-    .quote {
-        font-size: 0.85rem;
-        font-style: italic;
-        color: var(--color-text-muted);
-        line-height: 1.5;
-        margin: 0;
-    }
-
-    .card-title-row {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
     }
 
     .card-num {
         display: flex;
         align-items: center;
-        justify-content: center;
-        min-width: 24px;
-        height: 24px;
-        background: #f1f5f9;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        width: fit-content;
+    }
+
+    .num-circle {
         color: var(--color-primary);
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        font-size: 0.75rem;
+        background: rgba(var(--color-primary-rgb), 0.1);
+        border-radius: 8px;
+        font-size: 0.85rem;
         font-weight: 800;
+        padding: 6px 12px;
+        flex-shrink: 0;
     }
 
     .nav-arrow {
         background: white;
         color: var(--color-text-muted);
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -917,7 +1229,7 @@
 
     .nav-arrow:hover {
         color: var(--color-primary);
-        box-shadow: var(--shadow-md);
+        transform: scale(1.1);
     }
 
     .nav-arrow svg {
@@ -928,23 +1240,34 @@
     .indicators {
         display: flex;
         justify-content: center;
-        gap: 8px;
-        margin-top: 2rem;
+        gap: 10px;
+        margin-top: 2.5rem;
     }
 
     .dot {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         background: #cbd5e1;
         transition: all 0.3s;
         padding: 0;
+        cursor: pointer;
+        border: none;
     }
 
     .dot.active {
         background: var(--color-primary);
-        width: 24px;
-        border-radius: 4px;
+        width: 30px;
+        border-radius: 5px;
+    }
+
+    .loading-concepts {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 350px;
+        color: var(--color-text-muted);
+        font-weight: 500;
     }
 
     @media (max-width: 640px) {
@@ -957,9 +1280,13 @@
             gap: 0.5rem;
         }
 
-        .conceptual-tabs,
-        .guide-tabs {
-            width: 100%;
+        .carousel-container {
+            gap: 0.5rem;
+        }
+
+        .nav-arrow {
+            width: 36px;
+            height: 36px;
         }
     }
 </style>

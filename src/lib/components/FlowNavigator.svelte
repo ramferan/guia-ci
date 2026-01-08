@@ -9,6 +9,8 @@
     let currentNodeId = null;
     let initialNodeId = null;
     let nodes = {};
+    export let onExitFlow = () => {};
+    export let isAdmin = false;
     let history = [];
     let loading = true;
     let error = null;
@@ -56,8 +58,6 @@
         history = [];
         currentNodeId = initialNodeId;
     }
-
-    export let onExitFlow = () => {};
 </script>
 
 <div class="flow-container">
@@ -71,26 +71,27 @@
                 {#if currentNode}
                     {#if currentNode.type === "question"}
                         <QuestionCard
+                            nodeId={currentNodeId}
                             question={currentNode.question}
                             description={currentNode.description}
                             lawTitle={currentNode.lawTitle}
                             lawQuote={currentNode.lawQuote}
                             options={currentNode.options}
-                            infoType={currentNode.infoType}
                             onSelect={handleSelect}
                             onBack={history.length > 0 ? handleBack : null}
                             {onExitFlow}
+                            {isAdmin}
                         />
                     {:else if currentNode.type === "result"}
                         <ResultCard
+                            nodeId={currentNodeId}
                             title={currentNode.title}
                             content={currentNode.content}
                             lawTitle={currentNode.lawTitle}
                             lawQuote={currentNode.lawQuote}
-                            infoType={currentNode.infoType}
-                            onRestart={handleRestart}
                             onBack={history.length > 0 ? handleBack : null}
                             {onExitFlow}
+                            {isAdmin}
                         />
                     {/if}
                 {/if}

@@ -23,7 +23,7 @@
     </div>
     <slot>
         {#if content}
-            <p class="legal-content">{content}</p>
+            <p class="legal-content">"{content}"</p>
         {/if}
     </slot>
 </div>
@@ -62,5 +62,7 @@
         color: var(--color-text-main);
         line-height: 1.6;
         margin: 0;
+        font-style: italic;
+        opacity: 0.9;
     }
 </style>

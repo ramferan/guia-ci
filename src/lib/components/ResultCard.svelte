@@ -1,57 +1,96 @@
 <script>
-  import ContextualInfo from "./ContextualInfo.svelte";
   import LegalBox from "./LegalBox.svelte";
+  import EditModal from "./EditModal.svelte";
+  import { db } from "../firebase";
+  import { collection, getDocs } from "firebase/firestore";
 
+  export let nodeId = "";
   export let title = "";
   export let content = "";
   export let lawTitle = "";
   export let lawQuote = "";
-  export let infoType = ""; // 'ci', 'ip', 'jerarquia'
+
   export let onBack = null;
   export let onExitFlow = null;
+  export let isAdmin = false;
 
-  let isHelpOpen = false;
+  let isEditing = false;
+
+  let nodeOptions = [];
+
+  async function handleEdit() {
+    try {
+      const querySnap = await getDocs(collection(db, "nodes"));
+      nodeOptions = querySnap.docs.map((doc) => ({
+        value: doc.id,
+        label: `${doc.id} - ${doc.data().question || doc.data().title || ""}`,
+      }));
+      isEditing = true;
+    } catch (e) {
+      console.error("Error fetching node options:", e);
+      isEditing = true;
+    }
+  }
+
+  function onSaveSuccess() {
+    location.reload();
+  }
 </script>
 
-<div class="card result-card">
-  <div class="card-header">
-    {#if onBack && false}
-      <button class="btn-back" on:click={onBack}>&lt; Volver</button>
-    {/if}
+<div class="card">
+  <div class="card-actions-top">
+    <div class="nav-group">
+      {#if onBack}
+        <button class="btn-reset-cover" title="Volver" on:click={onBack}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            style="width: 20px; height: 20px;"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      {/if}
 
-    {#if onExitFlow && false}
-      <button
-        class="btn-reset-cover"
-        title="Volver a la portada de la Guía"
-        on:click={onExitFlow}
-      >
-        GI
-      </button>
-    {/if}
-
-    {#if infoType}
-      <button
-        class="btn-help"
-        class:active={isHelpOpen}
-        on:click={() => (isHelpOpen = !isHelpOpen)}
-        title="Ver información adicional"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2.5"
-          stroke="currentColor"
-          class="w-4 h-4"
+      {#if onExitFlow}
+        <button
+          class="btn-reset-cover"
+          title="Volver a la portada de la Guía"
+          on:click={onExitFlow}
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
-          />
-        </svg>
-      </button>
-    {/if}
+          GI
+        </button>
+      {/if}
+    </div>
+
+    <div class="admin-group">
+      {#if isAdmin}
+        <button
+          class="edit-btn-top-inner"
+          on:click={handleEdit}
+          title="Editar resultado"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+            />
+          </svg>
+        </button>
+      {/if}
+    </div>
   </div>
 
   <div class="icon-wrapper">
@@ -70,10 +109,10 @@
     </svg>
   </div>
 
-  <h2>{title}</h2>
+  <div class="title-header">
+    <h2>{title}</h2>
+  </div>
   <p>{content}</p>
-
-  <ContextualInfo type={infoType} isOpen={isHelpOpen} />
 
   {#if lawQuote}
     <LegalBox title={lawTitle} content={lawQuote} />
@@ -86,8 +125,50 @@
   {/if}
 </div>
 
+{#if isEditing}
+  <EditModal
+    node={{
+      id: nodeId,
+      title,
+      content,
+      lawTitle,
+      lawQuote,
+      type: "result",
+    }}
+    collectionName="nodes"
+    fields={[
+      {
+        name: "type",
+        label: "Tipo de Nodo",
+        type: "select",
+        options: [
+          { value: "question", label: "Pregunta" },
+          { value: "result", label: "Resultado" },
+        ],
+      },
+      { name: "title", label: "Título", type: "text" },
+      { name: "content", label: "Contenido", type: "textarea" },
+      { name: "lawTitle", label: "Ref. Legal (Título)", type: "text" },
+      { name: "lawQuote", label: "Cita Legal (Texto)", type: "textarea" },
+      {
+        name: "options",
+        label: "Editar Opciones (si es Pregunta)",
+        type: "options",
+        nodeOptions: nodeOptions,
+      },
+    ]}
+    on:close={() => (isEditing = false)}
+    on:save={onSaveSuccess}
+  />
+{/if}
+
 <style>
-  .result-card {
+  .card {
+    position: relative;
+    padding: 2rem;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
     text-align: center;
   }
 
@@ -103,90 +184,76 @@
     justify-content: center;
   }
 
-  svg {
+  .icon-wrapper svg {
     width: 32px;
     height: 32px;
   }
 
+  .title-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
   h2 {
     color: var(--color-text-main);
-    margin-bottom: 1rem;
+    margin: 0;
   }
 
   p {
     color: var(--color-text-muted);
     line-height: 1.6;
     font-size: 1.1rem;
+    margin-bottom: 2rem;
   }
 
-  .btn-reset-cover {
-    position: absolute;
-    top: 3rem;
-    right: 3rem;
-    width: 38px;
-    height: 38px;
-    background: var(--color-primary);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 900;
-    box-shadow: var(--shadow-md);
-    transition: all 0.2s;
-    border: 2px solid white;
-    z-index: 10;
-    cursor: pointer;
-    text-decoration: none;
-  }
-
-  .btn-reset-cover:hover {
-    transform: scale(1.1);
-    background: var(--color-primary-dark);
-  }
-
-  .card-header {
+  .card-actions-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    z-index: 20;
   }
 
-  .btn-help {
-    width: 28px;
-    height: 28px;
+  .nav-group,
+  .admin-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .edit-btn-top-inner,
+  .btn-reset-cover {
+    background: white;
+    border: 1px solid #e2e8f0;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    background: #f1f5f9;
-    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--color-primary);
+    cursor: pointer;
     transition: all 0.2s;
-    border: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-sm);
+    position: static;
+    font-weight: 700;
   }
 
-  .btn-help svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .btn-help:hover,
-  .btn-help.active {
-    background: var(--color-primary);
-    color: white;
+  .edit-btn-top-inner:hover,
+  .btn-reset-cover:hover {
+    background: #f8fafc;
     border-color: var(--color-primary);
     transform: scale(1.1);
   }
 
-  .btn-back {
-    background: none;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    padding: 0;
-    width: auto;
-    font-weight: 500;
+  .edit-btn-top-inner svg {
+    width: 18px;
+    height: 18px;
   }
+
   .btn-goto-index {
     align-self: center;
     background: none;

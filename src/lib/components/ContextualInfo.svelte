@@ -1,51 +1,76 @@
 <script>
     import { slide } from "svelte/transition";
+    import { db } from "../firebase";
+    import {
+        doc,
+        getDoc,
+        collection,
+        getDocs,
+        query,
+        where,
+    } from "firebase/firestore";
+    import { onMount, afterUpdate } from "svelte";
 
-    export let type = ""; // 'ci', 'ip', 'jerarquia'
+    export let type = ""; // ID of the concept section
     export let isOpen = false;
 
-    const data = {
-        ci: {
-            title: "Sobre el Consentimiento Informado",
-            text: "Es el proceso de comunicación entre médico y paciente capaz, donde este último acepta o rechaza una intervención tras entender riesgos y beneficios.",
-            steps: [
-                "Debe ser libre y voluntario",
-                "Verbal por defecto, escrito para riesgos/cirugía",
-                "Revocable en cualquier momento",
-            ],
-        },
-        ip: {
-            title: "Sobre las Instrucciones Previas",
-            text: "Documento legal donde una persona capaz decide hoy qué tratamientos quiere o no recibir en el futuro si pierde la capacidad de decidir.",
-            steps: [
-                "Se consulta en el Registro oficial",
-                "Obliga al médico si es legal y clínico",
-                "Nombra un representante si se desea",
-            ],
-        },
-        jerarquia: {
-            title: "Jerarquía de Decisión",
-            text: "Orden legal que el médico DEBE seguir cuando un paciente no puede decidir por sí mismo:",
-            steps: [
-                "1. Buscar Instrucciones Previas registradas.",
-                "2. Consultar a representantes o allegados.",
-                "3. Si nada de lo anterior es posible, actuar en beneficio del paciente.",
-            ],
-        },
-    };
+    let current = null;
+    let loading = false;
+    let lastType = "";
 
-    $: current = data[type];
+    async function fetchInfo() {
+        if (!type || type === lastType) return;
+        loading = true;
+        try {
+            const docRef = doc(db, "concept_sections", type);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const sectionData = docSnap.data();
+
+                // Fetch items for this section
+                const itemsQuery = query(
+                    collection(db, "concept_items"),
+                    where("sectionId", "==", type),
+                );
+                const itemsSnap = await getDocs(itemsQuery);
+                const items = itemsSnap.docs.map((d) => d.data());
+                items.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                current = { ...sectionData, items };
+                lastType = type;
+            } else {
+                current = null;
+            }
+        } catch (e) {
+            console.error("Error fetching contextual info:", e);
+            current = null;
+        } finally {
+            loading = false;
+        }
+    }
+
+    $: if (isOpen && type) {
+        fetchInfo();
+    }
 </script>
 
-{#if isOpen && current}
+{#if isOpen}
     <div class="contextual-info" transition:slide>
-        <h5>{current.title}</h5>
-        <p>{current.text}</p>
-        <ul>
-            {#each current.steps as step}
-                <li>{step}</li>
-            {/each}
-        </ul>
+        {#if loading}
+            <p>Cargando información...</p>
+        {:else if current}
+            <h5>{current.title}</h5>
+            {#if current.description}
+                <p>{current.description}</p>
+            {/if}
+            {#if current.items && current.items.length > 0}
+                <ul>
+                    {#each current.items as item}
+                        <li><strong>{item.label}:</strong> {item.summary}</li>
+                    {/each}
+                </ul>
+            {/if}
+        {/if}
         <div class="tip">
             <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -12,7 +12,9 @@
         loading = true;
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // Auth state change will be handled by parent
+            // Auth state change will be handled by parent,
+            // but we can also force a navigation to root if needed
+            window.location.href = "/";
         } catch (e) {
             console.error(e);
             error = "Error al iniciar sesión. Verifica tus credenciales.";
@@ -57,10 +59,35 @@
         <button type="submit" disabled={loading}>
             {loading ? "Entrando..." : "Iniciar Sesión"}
         </button>
+
+        <button
+            type="button"
+            class="btn-cancel"
+            on:click={() => (window.location.href = "/")}
+        >
+            Cancelar / Volver
+        </button>
     </form>
 </div>
 
 <style>
+    .btn-cancel {
+        width: 100%;
+        padding: 0.75rem;
+        background: transparent;
+        color: var(--color-text-muted);
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
     .login-container {
         max-width: 400px;
         margin: 4rem auto;

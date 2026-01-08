@@ -20,13 +20,14 @@ const concepts = [
     {
         id: "ci",
         title: "C. Informado",
+        description: "Fundamentos legales y requisitos para la validez de la conformidad del paciente.",
         order: 1,
         items: [
             {
                 label: "Definición",
                 summary: "Es la conformidad que da el paciente para que se realice una intervención médica tras ser debidamente informado.",
                 lawTitle: "Ley 41/2002 básica reguladora de la autonomía del paciente, Art. 3",
-                lawQuote: 'La "conformidad libre, voluntaria y consciente de un paciente, manifestada en el pleno uso de sus facultades después de recibir la información adecuada, para que tenga lugar una actuación que afecta a su salud".',
+                lawQuote: 'La conformidad libre, voluntaria y consciente de un paciente, manifestada en el pleno uso de sus facultades después de recibir la información adecuada, para que tenga lugar una actuación que afecta a su salud.',
             },
             {
                 label: "Formalización",
@@ -63,6 +64,7 @@ const concepts = [
     {
         id: "ip",
         title: "I. Previas",
+        description: "Procedimientos para el registro y consulta de las instrucciones y voluntades anticipadas.",
         order: 2,
         items: [
             {
@@ -106,6 +108,7 @@ const concepts = [
     {
         id: "jerarquia",
         title: "Jerarquía",
+        description: "Escalera legal de toma de decisiones cuando el paciente no puede decidir por sí mismo.",
         order: 3,
         items: [
             {
@@ -140,6 +143,13 @@ const concepts = [
             },
         ],
     },
+    {
+        id: "guia",
+        title: "Guía Interactiva",
+        description: "Herramienta interactiva para facilitar la toma de decisiones clínicas y legales.",
+        order: 4,
+        items: [],
+    },
 ];
 
 async function migrateConcepts() {
@@ -152,6 +162,7 @@ async function migrateConcepts() {
             await setDoc(sectionRef, {
                 id: concept.id,
                 title: concept.title,
+                description: concept.description || "",
                 order: concept.order
             });
             console.log(`✅ Sección creada: ${concept.title}`);
