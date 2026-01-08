@@ -52,7 +52,6 @@
     }
 
     .legal-box strong {
-        display: block;
         font-size: 0.8rem;
         color: var(--color-primary-dark);
     }
