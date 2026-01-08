@@ -15,28 +15,25 @@
 
     onMount(async () => {
         try {
-            // Get Config
             const configSnap = await getDoc(doc(db, "config", "flow_settings"));
             if (configSnap.exists()) {
                 initialNodeId = configSnap.data().initialNode;
                 currentNodeId = initialNodeId;
             }
 
-            // Get All Nodes
             const querySnapshot = await getDocs(collection(db, "nodes"));
             querySnapshot.forEach((doc) => {
                 nodes[doc.id] = doc.data();
             });
 
             if (!initialNodeId || Object.keys(nodes).length === 0) {
-                error =
-                    "No se encontraron datos del flujo. Verifica la migración.";
+                error = "No se encontraron datos.";
             }
 
             loading = false;
         } catch (e) {
-            console.error("Error fetching flow:", e);
-            error = "Error al cargar la guía de consentimiento.";
+            console.error("error", e);
+            error = "Error al cargar.";
             loading = false;
         }
     });
@@ -59,6 +56,8 @@
         history = [];
         currentNodeId = initialNodeId;
     }
+
+    export let onExitFlow = () => {};
 </script>
 
 <div class="flow-container">
@@ -69,23 +68,29 @@
     {:else}
         {#key currentNodeId}
             <div in:fly={{ y: 20, duration: 400 }} out:fade={{ duration: 200 }}>
-                {#if currentNode.type === "question"}
-                    <QuestionCard
-                        question={currentNode.question}
-                        description={currentNode.description}
-                        legal={currentNode.legal}
-                        options={currentNode.options}
-                        onSelect={handleSelect}
-                        onBack={history.length > 0 ? handleBack : null}
-                    />
-                {:else if currentNode.type === "result"}
-                    <ResultCard
-                        title={currentNode.title}
-                        content={currentNode.content}
-                        legal={currentNode.legal}
-                        onRestart={handleRestart}
-                        onBack={history.length > 0 ? handleBack : null}
-                    />
+                {#if currentNode}
+                    {#if currentNode.type === "question"}
+                        <QuestionCard
+                            question={currentNode.question}
+                            description={currentNode.description}
+                            legal={currentNode.legal}
+                            options={currentNode.options}
+                            infoType={currentNode.infoType}
+                            onSelect={handleSelect}
+                            onBack={history.length > 0 ? handleBack : null}
+                            {onExitFlow}
+                        />
+                    {:else if currentNode.type === "result"}
+                        <ResultCard
+                            title={currentNode.title}
+                            content={currentNode.content}
+                            legal={currentNode.legal}
+                            infoType={currentNode.infoType}
+                            onRestart={handleRestart}
+                            onBack={history.length > 0 ? handleBack : null}
+                            {onExitFlow}
+                        />
+                    {/if}
                 {/if}
             </div>
         {/key}
