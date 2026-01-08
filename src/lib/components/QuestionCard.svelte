@@ -1,5 +1,6 @@
 <script>
   import ContextualInfo from "./ContextualInfo.svelte";
+  import LegalBox from "./LegalBox.svelte";
 
   export let question = "";
   export let description = "";
@@ -75,26 +76,7 @@
   </div>
 
   {#if legal}
-    <div class="legal-box">
-      <div class="legal-header">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="legal-svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
-          />
-        </svg>
-        <strong>Marco Legal:</strong>
-      </div>
-      {legal}
-    </div>
+    <LegalBox content={legal} />
   {/if}
 
   {#if onExitFlow}
@@ -116,29 +98,6 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-
-  .legal-box {
-    margin-top: 2rem;
-    padding: 1rem;
-    background-color: #f1f5f9;
-    border-left: 4px solid var(--color-text-muted);
-    font-size: 0.9rem;
-    color: var(--color-text-main);
-    border-radius: 0 0.5rem 0.5rem 0;
-  }
-
-  .legal-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .legal-svg {
-    width: 20px;
-    height: 20px;
-    color: var(--color-primary);
   }
 
   .btn-reset-cover {
@@ -166,12 +125,6 @@
   .btn-reset-cover:hover {
     transform: scale(1.1);
     background: var(--color-primary-dark);
-  }
-
-  .legal-box strong {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--color-primary-dark);
   }
 
   .card-header {
