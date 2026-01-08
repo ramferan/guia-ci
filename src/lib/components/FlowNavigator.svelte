@@ -73,7 +73,8 @@
                         <QuestionCard
                             question={currentNode.question}
                             description={currentNode.description}
-                            legal={currentNode.legal}
+                            lawTitle={currentNode.lawTitle}
+                            lawQuote={currentNode.lawQuote}
                             options={currentNode.options}
                             infoType={currentNode.infoType}
                             onSelect={handleSelect}
@@ -84,7 +85,8 @@
                         <ResultCard
                             title={currentNode.title}
                             content={currentNode.content}
-                            legal={currentNode.legal}
+                            lawTitle={currentNode.lawTitle}
+                            lawQuote={currentNode.lawQuote}
                             infoType={currentNode.infoType}
                             onRestart={handleRestart}
                             onBack={history.length > 0 ? handleBack : null}
