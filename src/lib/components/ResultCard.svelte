@@ -4,7 +4,8 @@
 
   export let title = "";
   export let content = "";
-  export let legal = "";
+  export let lawTitle = "";
+  export let lawQuote = "";
   export let infoType = ""; // 'ci', 'ip', 'jerarquia'
   export let onBack = null;
   export let onExitFlow = null;
@@ -74,8 +75,8 @@
 
   <ContextualInfo type={infoType} isOpen={isHelpOpen} />
 
-  {#if legal}
-    <LegalBox content={legal} />
+  {#if lawQuote}
+    <LegalBox title={lawTitle} content={lawQuote} />
   {/if}
 
   {#if onExitFlow}

@@ -4,7 +4,8 @@
 
   export let question = "";
   export let description = "";
-  export let legal = "";
+  export let lawTitle = "";
+  export let lawQuote = "";
   export let options = [];
   export let infoType = ""; // 'ci', 'ip', 'jerarquia'
   export let onSelect = (id) => {};
@@ -75,8 +76,8 @@
     {/each}
   </div>
 
-  {#if legal}
-    <LegalBox content={legal} />
+  {#if lawQuote}
+    <LegalBox title={lawTitle} content={lawQuote} />
   {/if}
 
   {#if onExitFlow}
