@@ -66,7 +66,7 @@ export const decisionFlow = {
             id: 'consultar_allegados',
             type: 'result',
             title: 'Consultar a los Allegados',
-            content: 'Ante la ausencia de instrucciones previas, consulte a los familiares o allegados para conocer la voluntad presunta del paciente. Si no es posible, el médico actuará en beneficio de la salud del paciente.',
+            content: 'Ante la ausencia de instrucciones previas, consulte a los familiares o allegados para averiguar qué habría decidido el paciente si pudiera expresarse (voluntad presunta). No se trata de recabar la opinión de los familiares sobre qué es mejor, sino de conocer cuál habría sido la decisión del propio paciente. Si no es posible determinarla, el médico actuará en beneficio de la salud del paciente.',
             legal: 'Ley 41/2002, Art. 9.3.a: "Cuando el paciente no sea capaz... el consentimiento lo prestarán sus representantes legales o personas vinculadas por razones familiares o de hecho."',
             action: 'Finalizar'
         }
